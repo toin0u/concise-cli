@@ -1,0 +1,39 @@
+{
+    "name": "toin0u/concise-cli",
+    "description": "Concise your urls from console",
+    "license": "MIT",
+    "keywords": ["url", "shorten", "cli"],
+    "homepage": "https://github.com/toin0u/concise-cli",
+    "authors": [
+        {
+            "name": "Antoine Corcy",
+            "email": "contact@sbin.dk",
+            "homepage": "http://sbin.dk",
+            "role": "Developer"
+        },
+        {
+            "name": "Márk Sági-Kazár",
+            "email": "mark.sagikazar@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "symfony/console": "~2.6.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Concise\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-develop": "0.1-dev"
+        }
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
+}
