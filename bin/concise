@@ -1,0 +1,28 @@
+#!/usr/bin/env php
+<?php
+
+$cwd = getcwd();
+
+$paths = [
+    $cwd . '/vendor/autoload.php',
+    $cwd . '/../../autoload.php',
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+];
+
+$paths = array_filter($paths, 'is_file');
+
+if ($paths and $autoload = array_shift($paths)) {
+    require $autoload;
+} else {
+    fwrite(STDERR,
+        'You must set up the project dependencies, run the following commands:' . PHP_EOL .
+        'curl -s http://getcomposer.org/installer | php' . PHP_EOL .
+        'php composer.phar install' . PHP_EOL
+    );
+    exit(1);
+}
+
+$app = new Concise\Application;
+
+$app->run();
