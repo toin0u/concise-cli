@@ -19,12 +19,13 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "toin0u/concise": "dev-feature/factory",
-        "symfony/console": "~2.6.0",
-        "symfony/yaml": "~2.6.0"
+        "toin0u/concise": "0.2.*@dev",
+        "symfony/console": "~2.6",
+        "symfony/yaml": "~2.6",
+        "guzzlehttp/guzzle": ">=4.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.4.0"
+        "phpunit/phpunit": "~4.4"
     },
     "autoload": {
         "psr-4": {
