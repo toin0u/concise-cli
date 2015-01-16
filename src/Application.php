@@ -27,6 +27,15 @@ class Application extends BaseApplication
      */
     protected $concise;
 
+    /**
+     * List of available providers
+     *
+     * @var array
+     */
+    protected $providers = array(
+        'google' => 'Concise\Provider\Google',
+    );
+
     public function __construct()
     {
         parent::__construct('Concise', '0.1-dev');
@@ -52,6 +61,10 @@ class Application extends BaseApplication
 
         if (!isset($config['provider'])) {
             throw new \RuntimeException('No provider specified');
+        }
+
+        if (!isset($this->providers[$name])) {
+            throw new \InvalidArgumentException(sprintf('Provider "%s" does not exists', $name));
         }
 
         $this->concise = Factory::create($config['provider']);
