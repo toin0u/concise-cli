@@ -12,10 +12,7 @@
 namespace Concise;
 
 use Symfony\Component\Console\Application as BaseApplication;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * @author Márk Sági-Kazár <mark.sagikazar@gmail.com>
@@ -23,53 +20,16 @@ use Symfony\Component\Yaml\Yaml;
 class Application extends BaseApplication
 {
     /**
-     * @var Concise
-     */
-    protected $concise;
-
-    /**
-     * List of available providers
-     *
-     * @var array
-     */
-    protected $providers = array(
-        'google' => 'Concise\Provider\Google',
-    );
-
-    public function __construct()
-    {
-        parent::__construct('Concise', '0.1-dev');
-
-        $this->add(new Command\Shorten);
-        $this->add(new Command\Expand);
-    }
-
-    /**
-     * @return Concise
-     */
-    public function getConcise()
-    {
-        return $this->concise;
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function doRun(InputInterface $input, OutputInterface $output)
+    protected function getDefaultCommands()
     {
-        $config = $this->loadConfiguration($input);
+        $commands = parent::getDefaultCommands();
 
-        if (!isset($config['provider'])) {
-            throw new \RuntimeException('No provider specified');
-        }
+        $commands[] = new Command\Shorten;
+        $commands[] = new Command\Expand;
 
-        if (!isset($this->providers[$name])) {
-            throw new \InvalidArgumentException(sprintf('Provider "%s" does not exists', $name));
-        }
-
-        $this->concise = Factory::create($config['provider']);
-
-        return parent::doRun($input, $output);
+        return $commands;
     }
 
     /**
@@ -86,45 +46,25 @@ class Application extends BaseApplication
             'Specify a custom location for the configuration file'
         ));
 
+        $definition->addOption(new InputOption(
+            'provider',
+            'p',
+            InputOption::VALUE_REQUIRED,
+            'Shorten/expand a URL using a specific provider'
+        ));
+
         return $definition;
     }
 
     /**
-     * Load configuration from file
-     *
-     * @param InputInterface $input
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    public function loadConfiguration(InputInterface $input)
+    protected function getDefaultHelperSet()
     {
-        $paths = ['concise.yml','.concise.yml'];
+        $helperSet = parent::getDefaultHelperSet();
 
-        if ($customPath = $input->getParameterOption(['-c','--config'])) {
-            if (!file_exists($customPath)) {
-                throw new RuntimeException('Custom configuration file not found at '.$customPath);
-            }
+        $helperSet->set(new Helper\Concise);
 
-            $paths = [$customPath];
-        }
-
-        $config = [];
-
-        foreach ($paths as $path) {
-            if (file_exists($path) and $parsedConfig = Yaml::parse($path)) {
-                $config = $parsedConfig;
-                break;
-            }
-        }
-
-        if ($homeDir = getenv('HOME')) {
-            $localPath = $homeDir.'/.config.yml';
-
-            if (file_exists($localPath) and $parsedConfig = Yaml::parse($localPath)) {
-                $config = array_replace_recursive($parsedConfig, $config);
-            }
-        }
-
-        return $config;
+        return $helperSet;
     }
 }

@@ -40,7 +40,7 @@ class Expand extends Command
     {
         $url = $input->getArgument('url');
 
-        $concise = $this->getApplication()->getConcise();
+        $concise = $this->getHelper('concise')->getConcise();
 
         $expandedUrl = $concise->expand($url);
 

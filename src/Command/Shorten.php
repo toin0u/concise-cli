@@ -40,7 +40,7 @@ class Shorten extends Command
     {
         $url = $input->getArgument('url');
 
-        $concise = $this->getApplication()->getConcise();
+        $concise = $this->getHelper('concise')->getConcise();
 
         $shortenedUrl = $concise->shorten($url);
 
