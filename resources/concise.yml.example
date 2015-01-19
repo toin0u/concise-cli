@@ -1,0 +1,13 @@
+profiles:
+  default:
+    provider: google
+  other:
+    provider: bitly
+    arguments:
+      - access_token
+  another:
+    provider: tinycc
+    arguments:
+      - 'login'
+      - 'API_KEY'
+

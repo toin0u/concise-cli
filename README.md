@@ -23,6 +23,21 @@ $ composer require toin0u/concise-cli
 
 ## Usage
 
+Create a configuration file in one of the following locations:
+
+- `$HOME/.concise.yml`
+- `./concise.yml`
+- `./.concise.yml`
+- any other location, just make sure to pass it with the -c/--config switch: `concise.phar <command> -c path/to/config.yml`
+
+Paste something similar to [this](resources/concise.yml.example) in the file (schema can be found [here](resources/schema.yml)).
+
+Run one of the following commands:
+
+- `concise.phar shorten http://google.hu`
+- `concise.phar expand http://goo.gl/hash`
+- `concise.phar validate`
+
 
 ## Testing
 
