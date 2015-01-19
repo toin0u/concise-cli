@@ -1,0 +1,16 @@
+root:
+  _type: array
+  _children:
+    profiles:
+      _type: prototype
+      _required: true
+      _prototype:
+        _type: array
+        _children:
+          provider:
+            _required: true
+            _type: text
+          arguments:
+            _type: prototype
+            _prototype:
+              _type: text

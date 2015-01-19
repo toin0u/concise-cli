@@ -28,6 +28,7 @@ class Application extends BaseApplication
 
         $commands[] = new Command\Shorten;
         $commands[] = new Command\Expand;
+        $commands[] = new Command\Validate;
 
         return $commands;
     }
