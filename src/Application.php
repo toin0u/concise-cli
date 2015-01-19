@@ -47,10 +47,11 @@ class Application extends BaseApplication
         ));
 
         $definition->addOption(new InputOption(
-            'provider',
+            'profile',
             'p',
             InputOption::VALUE_REQUIRED,
-            'Shorten/expand a URL using a specific provider'
+            'Use a profile other than the default',
+            'default'
         ));
 
         return $definition;
@@ -64,6 +65,7 @@ class Application extends BaseApplication
         $helperSet = parent::getDefaultHelperSet();
 
         $helperSet->set(new Helper\Concise);
+        $helperSet->set(new Helper\Config);
 
         return $helperSet;
     }

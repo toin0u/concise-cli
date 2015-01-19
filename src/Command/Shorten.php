@@ -14,7 +14,6 @@ namespace Concise\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -30,7 +29,7 @@ class Shorten extends Command
         $this
             ->setName('shorten')
             ->setDescription('Shorten a URL')
-            ->addArgument('url', InputArgument::REQUIRED, 'What URL do you want to shorten?');
+            ->addArgument('url', InputArgument::REQUIRED, 'URL to be shortened');
     }
 
     /**

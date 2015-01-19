@@ -9,12 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Concise;
+namespace Concise\Helper;
 
 use Ivory\HttpAdapter\GuzzleHttpHttpAdapter;
 use Symfony\Component\Console\Helper\InputAwareHelper;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * @author Márk Sági-Kazár <mark.sagikazar@gmail.com>
@@ -24,11 +22,11 @@ class Concise extends InputAwareHelper
     /**
      * @var array
      */
-    protected $providers = array(
+    protected $providers = [
         'bitly'  => 'Concise\Provider\Bitly',
         'google' => 'Concise\Provider\Google',
         'tinycc' => 'Concise\Provider\Tinycc',
-    );
+    ];
 
     /**
      * {@inheritdoc}
@@ -43,51 +41,54 @@ class Concise extends InputAwareHelper
      */
     public function getConcise()
     {
-        $config = $this->loadConfiguration($input);
+        $config = $this->getHelperSet()->get('config')->getConfiguration();
+        $arguments = [];
 
-        if (!$provider = $this->input->getParameterOption(['-p', '--provider'])) {
-            $provider = 'default';
+        $profile = $this->input->getOption('profile');
+
+        if (!isset($config['profiles'])) {
+            throw new \RuntimeException('No profiles found');
+        } elseif (!isset($config['profiles'][$profile])) {
+            throw new \RuntimeException(sprintf('Profile "%s" cannot be found', $profile));
         }
 
-        return $this->concise;
+        $profileConfig = $config['profiles'][$profile];
+
+        $class = $this->findProvider($config['profiles'][$profile]['provider']);
+
+        $reflection = new \ReflectionClass($class);
+
+        if (isset($config['profiles'][$profile]['arguments'])) {
+            $arguments = $config['profiles'][$profile]['arguments'];
+        }
+
+        array_unshift($arguments, new GuzzleHttpHttpAdapter);
+
+        $provider = $reflection->newInstanceArgs($arguments);
+
+        return new \Concise\Concise($provider);
     }
 
     /**
-     * Load configuration from file
+     * Finds the provider in the map or as a class
      *
-     * @param InputInterface $input
+     * @param string $provider
      *
-     * @return array
+     * @return string
      */
-    public function loadConfiguration(InputInterface $input)
+    protected function findProvider($provider)
     {
-        $paths = ['concise.yml','.concise.yml'];
+        if (isset($this->providers[$provider])) {
+            return $this->providers[$provider];
+        } elseif (class_exists($provider)) {
 
-        if ($customPath = $input->getParameterOption(['-c','--config'])) {
-            if (!file_exists($customPath)) {
-                throw new RuntimeException('Custom configuration file not found at '.$customPath);
+            if (is_subclass_of($provider, 'Concise\Provider\HttpAdapterAware')) {
+                return $provider;
             }
 
-            $paths = [$customPath];
+            throw new \InvalidArgumentException(sprintf('Provider "%s" must be a subclass of Concise\Provider\HttpAdapterAware', $provider));
         }
 
-        $config = [];
-
-        foreach ($paths as $path) {
-            if (file_exists($path) and $parsedConfig = Yaml::parse($path)) {
-                $config = $parsedConfig;
-                break;
-            }
-        }
-
-        if ($homeDir = getenv('HOME')) {
-            $localPath = $homeDir.'/.config.yml';
-
-            if (file_exists($localPath) and $parsedConfig = Yaml::parse($localPath)) {
-                $config = array_replace_recursive($parsedConfig, $config);
-            }
-        }
-
-        return $config;
+        throw new \RuntimeException(sprintf('Provider "%s" not found', $provider));
     }
 }
